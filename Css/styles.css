@@ -1,0 +1,181 @@
+:root {
+    --bgLight: #EEEEEE;
+    --bgDark: #31363F;
+
+    --textcolor: #76ABAE;
+    --textdark: #222831;
+
+    --textlight: #676767;
+    --texterror: #ff5858;
+    --textextra: #a13c3c;
+    --textcorrect: #ffffff;
+  }
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: "Montserrat", sans-serif;
+    background-color: var(--bgDark);
+}
+
+header{
+    width: 100%;
+    position: fixed;
+}
+
+header nav{
+    display: flex;
+    padding: 1.5rem 10rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header nav .nav-link{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+header nav .logo{
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--textcolor);
+    user-select: none;
+    cursor: default;
+}
+
+
+header nav .nav-link .nav-links{
+    text-decoration: none;
+    list-style: none;
+    padding: .5rem 1rem;
+    position: relative;
+
+    cursor: pointer;
+    overflow: hidden;
+
+    transition: 1s ease;
+}
+
+header nav .nav-link .nav-links:after{
+    content: '';
+    width: 100%;
+    height: 100%;
+    background-color: var(--textcolor);
+    position: absolute;
+    top: 100%;
+    left: 0%;
+    transition: .5s ease;
+    z-index: -1;
+
+    border-radius: 100%;
+}
+
+header nav .nav-link .nav-links a{
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--bgLight); 
+    z-index: 9; 
+}
+
+header nav .nav-link .nav-links:hover::after{
+    top: 0%;
+    color: var(--bgDark);
+
+    border-radius: 5%;
+}
+
+header nav .nav-link .nav-links:hover a{
+    color: var(--bgDark);
+    font-weight: 600;
+}
+
+
+.section1{
+    width: 100%;
+    height: 100vh;
+    padding: 1.5rem 10rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    align-items: center;
+}
+
+.section1 .menu{
+    position: absolute;
+    width: 60%;
+    height: 3rem;
+    border-radius: 5px;
+    background-color: var(--textdark);
+    top: 15%;
+}
+
+.section1 .menu ul{
+    display: flex;
+    width: 100;
+    height: 100%;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.section1 .menu ul li{
+    text-decoration: none;
+    list-style: none;
+    color: var(--textlight);
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+
+.section1 .time-content{
+    position: absolute;
+    top: 25%;
+    color: var(--textcolor);
+    font-size: 3.5em;
+    font-weight: 500;
+
+}
+
+.text-content {
+    width: 100%;
+    display: flex;
+    gap: 1.5em;
+    flex-wrap: wrap;
+}
+
+.text-content .words{
+    display: flex;
+}
+
+.text-content .words .word{
+    font-size: 2em;
+    font-weight: 500;
+    letter-spacing: .09rem;
+    text-align: center;
+
+    color: var(--textlight);
+
+    user-select: none;
+    cursor: default;
+}
+
+.correct{
+    color: var(--textcorrect) !important;
+}
+
+.wrong{
+    color: var(--texterror) !important;
+}
+
+.extra{
+    color: var(--textextra) !important;
+}
