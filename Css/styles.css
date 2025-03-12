@@ -2,7 +2,7 @@
     --bgLight: #EEEEEE;
     --bgDark: #31363F;
 
-    --textcolor: #76ABAE;
+    --textcolor: #76abae;
     --textdark: #222831;
 
     --textlight: #676767;
@@ -217,13 +217,24 @@ header nav .nav-link .nav-links:hover a{
     }
 }
 
+.hideModel{
+    display: none !important;
+}
 
-.modelPopUp{
+.showModel{
+    display: block !important;
+}
+
+.selected{
+    color: var(--textcolor) !important;
+}
+
+.modelPopUpStats{
     width: 100vw;
     height: 100vh;
     background-color: white;
     position: absolute;
-display: none;
+    display: none;
     z-index: 9;
 
     background: rgb(0 0 0 / 15%);
@@ -233,12 +244,79 @@ display: none;
     -webkit-backdrop-filter: blur(5.8px);
 }
 
-.modelPopUp .contentArea{
-    width: 50vw;
-    height: 50vh;
+.modelPopUpStats .contentArea{
+    width: 70vw;
+    height: 80vh;
     background-color: var(--bgDark);
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+
+    display: grid;
+    grid-template-columns: 0.3fr 1fr;
+    grid-template-rows: 1fr 0.1fr;
+    gap: 5px 5px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "stats chart"
+      "modelFooter modelFooter";
+}
+
+.stats { 
+    grid-area: stats; 
+
+    padding: 2rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: start;
+}
+
+.stats .statsGrp{
+    gap: 1rem;
+}
+
+.stats .statsGrp label{
+    font-size: 1.1em;
+    font-weight: 500;
+    color: var(--textcorrect);
+}
+
+.stats .statsGrp p{
+    font-size: 2.5em;
+    font-weight: 600;
+    color: var(--textcolor);
+}
+
+.chart { 
+    /* border: thin dashed white; */
+    grid-area: chart; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.modelFooter { 
+    grid-area: modelFooter; 
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modelFooter .close{
+    width: 8rem;
+    height: 3rem;
+    font-size: 1.5em;
+    font-weight: 500;
+
+    border: none;
+    background-color: var(--textcolor);
+    color: var(--textcorrect);
+    border-radius: 3px;
+    cursor: pointer;
+
+    transition: .5 ease;
 }
