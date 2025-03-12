@@ -157,13 +157,14 @@ header nav .nav-link .nav-links:hover a{
 }
 
 .text-content .words .word{
-    font-size: 2em;
+    font-size: 1.5em;
     font-weight: 500;
     letter-spacing: .09rem;
     text-align: center;
-
+    min-width: .7em;
     color: var(--textlight);
-
+    position: relative;
+    overflow: hidden;
     user-select: none;
     cursor: default;
 }
@@ -178,4 +179,66 @@ header nav .nav-link .nav-links:hover a{
 
 .extra{
     color: var(--textextra) !important;
+}
+
+.cursor::after {
+    content: '';
+
+    width: 2px;
+    height: 100%;
+    position: absolute;
+    top: 10%;
+    left: 0%;
+    background-color: var(--textcolor);
+    opacity: 0.3;
+    animation: cursorBlink 3s infinite ease-in-out;
+}
+
+.cursorExtraWord::after {
+    content: '';
+    width: 3px;
+    border-radius: 5px;
+    height: 100%;
+    position: absolute;
+    top: 10%;
+    right: 0%;
+    background-color: var(--textcolor);
+    opacity: 0.3;
+    animation: cursorBlink 3s infinite ease-in-out; /* added duration to animation */
+}
+
+@keyframes cursorBlink {
+    0%, 100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+
+.modelPopUp{
+    width: 100vw;
+    height: 100vh;
+    background-color: white;
+    position: absolute;
+display: none;
+    z-index: 9;
+
+    background: rgb(0 0 0 / 15%);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(5.8px);
+}
+
+.modelPopUp .contentArea{
+    width: 50vw;
+    height: 50vh;
+    background-color: var(--bgDark);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }

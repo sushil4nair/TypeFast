@@ -1,5 +1,14 @@
 document.addEventListener('DOMContentLoaded', ()=>{
     let sentence = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque ipsum modi, autem ducimus, non dignissimos pariatur, quo illum esse totam adipisci et itaque aperiam recusandae aliquid omnis quaerat reiciendis nulla?';
+    let timer;
+
+    let status = {
+        correctType : 0,
+        wrongType : 0,
+        totalType:0,
+        wpm: 0,
+        chartData: []
+    }
 
     let convertTextToHtml = (e) => {
         const textContainer = document.querySelector('#text-content');
@@ -26,7 +35,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         afterSplit.forEach((char, charIndex) => {
             let span = document.createElement('span');
             if (isFirstWord && charIndex === 0) {
-                span.classList.add('word', 'currentWord'); 
+                span.classList.add('word', 'currentWord', 'cursor'); 
             } else {
                 span.classList.add('word');
             }
@@ -45,9 +54,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
         const currentWord = document.querySelector('.currentWord');
         const currentText = currentWord?.innerText;
-        const nextWordSibling = currentWord?.nextElementSibling
+        const nextWordSibling = currentWord?.nextElementSibling;
+
+        status.chartData.push(remainingtime)
+        status.totalType += 1;
 
         if(e.code === 'Space'){
+            status.correctType += 1;
             currentWord?.classList.remove('currentWord');
 
             currentWords.classList.add('completed');
@@ -56,21 +69,34 @@ document.addEventListener('DOMContentLoaded', ()=>{
             
             nextWordsSibling.firstElementChild.classList.add('currentWord');
 
+            removeAllCursor(currentWords);
+
+            moveCursor(currentWord, nextWordsSibling.firstElementChild)
+
             return true;
         }
-
+        
         if(currentText == e.key){
-            //initiateTimer();
+            initiateTimer();
+            status.correctType += 1;
+
             currentWord.classList.remove('currentWord');
             currentWord.classList.add('correct');
 
             nextWordSibling?.classList.add('currentWord');
+
+            moveCursor(currentWord, nextWordSibling);
+
         }
         else{
+            status.wrongType += 1;
 
             if(currentWord == null){
+
+                removeAllCursor(currentWords);
+
                 let span = document.createElement('span');
-                span.classList.add('word', 'extra')
+                span.classList.add('word', 'extra', 'cursorExtraWord')
                 span.innerText = e.key;
                 currentWords.appendChild(span);
                 return true;
@@ -80,6 +106,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
             currentWord.classList.add('wrong');
 
             nextWordSibling?.classList.add('currentWord');
+
+            moveCursor(currentWord, nextWordSibling);
         }
     });
 
@@ -91,18 +119,59 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     });
 
-    let initiateTimer = ()=>{
-        let timeContent = document.querySelector('.time-content');
-        let seconds = parseInt(timeContent.innerText);
-        const timer = setInterval(() => {
-            timeContent.innerText = seconds;
-            seconds--;
-          
-            if (seconds < 0) {
-              clearInterval(timer); 
-              console.log("Time's up!");
+    let remainingtime = 0;
+
+    let initiateTimer = () => {
+        if (!timer) {
+            let timeContent = document.querySelector('.time-content');
+            let seconds = 15;
+            remainingtime = 0; 
+            timer = setInterval(() => {
+                remainingtime++; 
+                timeContent.innerText = remainingtime;
+
+                if (remainingtime >= seconds) {
+                    clearInterval(timer); 
+
+                    status.wpm = (status.totalType / 5) * (60 / seconds);
+                    //status.chartData = chartDataConvert(status.chartData);
+
+                    console.log(status)
+                }
+            }, 1000);
+        }
+    }
+
+
+    let moveCursor = (currentWord, nextWordSibling) =>{
+        currentWord?.classList.remove('cursor');
+        if(!nextWordSibling){
+            currentWord?.classList.add('cursorExtraWord');
+        }else{
+            nextWordSibling?.classList.add('cursor');
+        }
+    }
+
+    let removeAllCursor = (currentWords)=>{
+        for (let child of currentWords.children) {
+            if (child.classList.contains('cursorExtraWord')) {
+                child.classList.remove('cursorExtraWord');
             }
-          }, 1000);
+        }
+    }
+
+    let chartDataConvert = (arr) => {
+        return arr.reduce((acc, curr) => {
+            const lastEntry = acc[acc.length - 1];
+
+            if (lastEntry && lastEntry.sec === curr) {
+                lastEntry.count++;
+            } else {
+                acc.push({ sec: curr, count: 1 });
+            }
+    
+            return acc;
+        }, []);
     }
 
 });
