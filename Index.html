@@ -31,7 +31,7 @@
             <div class="stats">
 
                 <div class="statsGrp">
-                    <label>Total Word / Seconds</label>
+                    <label>Total Letter / Seconds</label>
                     <p id="totWordsSecId">00 / 00</p>
                 </div>
                 
@@ -46,7 +46,7 @@
                 </div>
 
                 <div class="statsGrp">
-                    <label>WPM</label>
+                    <label>LPM</label>
                     <p id="wpmId">0.0</p>
                 </div>
 
@@ -84,14 +84,17 @@
         
         <h1 class="time-content">0</h1>
 
-        <div class="text-content" id="text-content">
-            <!-- <div class="words currentWords"><span class="word currentWord cursor">L</span><span class="word">o</span><span class="word">r</span><span class="word">e</span><span class="word">m</span></div> -->
+        <div class="textMainConainer">
+            <div class="scrollFromhere" id="scrollFromhere"></div>
+            <div class="text-content" id="text-content"></div>
         </div>
+
+        <button type="button" class="reset">Reset</button>
     </section>
     
 
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="./Js/app.js"></script>
+    <script type="module" src="./Js/app.js"></script>
 </body>
 </html>

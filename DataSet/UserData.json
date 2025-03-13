@@ -1,0 +1,27 @@
+[
+    {
+        "userIp" : "106.201.228.171",
+        "userName" : "Person1",
+        "score" : 25.1
+    },
+    {
+        "userIp" : "192.168.19.2",
+        "userName" : "Person2",
+        "score" : 25.2
+    },
+    {
+        "userIp" : "192.168.19.3",
+        "userName" : "Person3",
+        "score" : 25.3
+    },
+    {
+        "userIp" : "192.168.19.4",
+        "userName" : "Person4",
+        "score" : 25.4
+    },
+    {
+        "userIp" : "192.168.19.5",
+        "userName" : "Person5",
+        "score" : 25.5
+    }
+]

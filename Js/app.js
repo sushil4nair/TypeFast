@@ -1,10 +1,40 @@
+let sentence
+let timer;
+let allow = true;
+let selectedTime = 15;
+let scroll = 100;
+let userData = [];
+
+async function fetchJsonData(url) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching JSON:', error);
+      return null;
+    }
+}
+
+async function getIPAddress() {
+    try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        return data.ip;
+    } catch (error) {
+        console.error('Error fetching IP address:', error);
+        return null;
+    }
+}
+  
+
+
 document.addEventListener('DOMContentLoaded', ()=>{
-    let sentence = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque ipsum modi, autem ducimus, non dignissimos pariatur, quo illum esse totam adipisci et itaque aperiam recusandae aliquid omnis quaerat reiciendis nulla?';
-    let timer;
-    let allow = true;
-    let selectedTime = 15;
 
     let status = {
+        missed : 0,
         correctType : 0,
         wrongType : 0,
         totalType:0,
@@ -50,12 +80,33 @@ document.addEventListener('DOMContentLoaded', ()=>{
     
         return words;
     };
+
+    fetchJsonData('../DataSet/UserData.json')
+    .then(data => {
+      if (data) {
+        console.log(data);
+        userData = data;
+      } else {
+        console.log('No data returned due to an error.');
+      }
+    });
+
+    fetchJsonData('../DataSet/SentenceData.json')
+    .then(data => {
+      if (data) {
+        const keys = Object.keys(data);
+        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+        sentence = data[randomKey];
+        convertTextToHtml();
+      } else {
+        console.log('No data returned due to an error.');
+      }
+    });
     
-    convertTextToHtml();
+    
 
     document.addEventListener('keypress', (e)=>{
         if(allow){
-
             const currentWords = document.querySelector('.currentWords');
             const nextWordsSibling = currentWords?.nextElementSibling
     
@@ -76,10 +127,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 
                 nextWordsSibling.firstElementChild.classList.add('currentWord');
     
+                validateIsRemaning(currentWords);
                 removeAllCursor(currentWords);
     
                 moveCursor(currentWord, nextWordsSibling.firstElementChild)
-    
+                letscroll();
                 return true;
             }
             
@@ -205,22 +257,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
 
     document.querySelector('.close').addEventListener('click', ()=>{
-        convertTextToHtml();
-        allow = true;
-        timer = null;
-        document.querySelector('.time-content').innerHTML = 0;
-        status = {
-            correctType : 0,
-            wrongType : 0,
-            totalType:0,
-            wpm: 0,
-            typePerSec: [],
-            chartData: [],
-            accuracy : 0,
-            seconds: selectedTime,
-        }
-        
+        resetAll();
         hideModel('.modelPopUpStats');
+    });
+
+    document.querySelector('.reset').addEventListener('click', ()=>{
+        resetAll();
     });
 
     document.querySelectorAll('.selectSecondBtn').forEach((button) => {
@@ -266,7 +308,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Count vs Sec',
+                    label: 'Chart',
                     data: labels.map((sec, index) => ({
                         y: counts[index],
                         x: sec
@@ -291,7 +333,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                     y: {
                         title: {
                             display: true,
-                            text: 'Count',
+                            text: 'Letter per seconds',
                             color: 'white'
                         },
                         ticks: {
@@ -311,4 +353,143 @@ document.addEventListener('DOMContentLoaded', ()=>{
     };
     
 
+    let letscroll = ()=>{        
+        const cursor = document.querySelector('.cursor').getBoundingClientRect();
+        const rect = document.getElementById("scrollFromhere").getBoundingClientRect();
+
+        if (cursor.bottom >= rect.top) {
+                
+                
+            document.querySelector('.text-content').scroll({
+                top: scroll,
+                behavior: "smooth",
+                });
+
+                scroll += 100;
+        }else{
+        }
+          
+    }
+
+    let validateIsRemaning = (currentWords)=>{
+        for (let child of currentWords.children) {
+            if (!child.classList.contains('correct') || child.classList.contains('wrong')) {
+                child.classList.add('wrong');
+                status.missed += 1
+            }
+        }
+    }
+
+    let resetAll = ()=>{
+        clearInterval(timer); 
+
+        fetchJsonData('../DataSet/SentenceData.json')
+            .then(data => {
+            if (data) {
+                const keys = Object.keys(data);
+                const randomKey = keys[Math.floor(Math.random() * keys.length)];
+                sentence = data[randomKey];
+                convertTextToHtml();
+            } else {
+                console.log('No data returned due to an error.');
+            }
+        });
+
+        allow = true;
+        timer = null;
+        scroll = 100; 
+        document.querySelector('.time-content').innerHTML = 0;
+        status = {
+            missed : 0,
+            correctType : 0,
+            wrongType : 0,
+            totalType:0,
+            wpm: 0,
+            typePerSec: [],
+            chartData: [],
+            accuracy : 0,
+            seconds: selectedTime,
+        }
+    }
+
+    let validateUserExist = async () => {
+        try {
+            let currentIp = await getIPAddress();
+            console.log(currentIp);
+            
+            if (currentIp) {
+                let filteredData = userData.filter(x => x.userIp === `${currentIp}`);
+                
+                if(filteredData.length){
+                    console.log('User Exist');
+                }else{
+                    console.log('User Not Exist');
+                }
+            }
+        } catch (error) {
+            console.error("Error getting IP address:", error);
+        }
+    }
+    
+    let UpdateJsonFile = ()=>{
+        const fs = require('fs');
+        fs.readFile('../DataSet/UserData.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading file:', err);
+            return;
+        }
+
+        const jsonData = JSON.parse(data);
+        const newUser = {
+            name: 'John Doe',
+            age: 30,
+        };
+
+        jsonData.users.push(newUser);
+
+        fs.writeFile('../DataSet/UserData.json', JSON.stringify(jsonData, null, 2), (err) => {
+            if (err) {
+                console.error('Error writing to file:', err);
+                } else {
+                console.log('Data successfully pushed to the JSON file');
+                }
+            });
+        });
+
+    }
+
+    validateUserExist();
+    //UpdateJsonFile()
+
+    
+
 });
+
+
+// [
+//     {
+//         "userIp" : "106.201.228.171",
+//         "userName" : "Person1",
+//         "score" : 25.1
+//     },
+//     {
+//         "userIp" : "192.168.19.2",
+//         "userName" : "Person2",
+//         "score" : 25.2
+//     },
+//     {
+//         "userIp" : "192.168.19.3",
+//         "userName" : "Person3",
+//         "score" : 25.3
+//     },
+//     {
+//         "userIp" : "192.168.19.4",
+//         "userName" : "Person4",
+//         "score" : 25.4
+//     },
+//     {
+//         "userIp" : "192.168.19.5",
+//         "userName" : "Person5",
+//         "score" : 25.5
+//     }
+// ]
